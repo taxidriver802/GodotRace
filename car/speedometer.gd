@@ -30,6 +30,23 @@ func _ready() -> void:
 	_gauge.offset_bottom = -margin
 	_gauge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_gauge)
+	# Units follow the player's setting (Settings > Gameplay > Speed units).
+	var settings := get_node_or_null("/root/GameSettings")
+	if settings != null:
+		_set_units(settings.get_value("speed_mph"))
+		settings.changed.connect(_on_setting_changed)
+
+
+func _on_setting_changed(key: String, value: Variant) -> void:
+	if key == "speed_mph":
+		_set_units(value)
+
+
+func _set_units(mph: bool) -> void:
+	use_mph = mph
+	_gauge.unit = "mph" if mph else "km/h"
+	# Same needle sweep in either unit: 180 km/h -> 120 mph (rounded to 20s).
+	_gauge.dial_max = roundf(dial_max * 0.621371 / 20.0) * 20.0 if mph else dial_max
 
 
 func _process(delta: float) -> void:

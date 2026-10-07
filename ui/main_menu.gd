@@ -1,5 +1,5 @@
 extends Control
-## Main menu: Start (opens the level picker), Settings (placeholder), Exit.
+## Main menu: Start (opens the level picker), Settings, Exit.
 ## The whole UI is built in code and anchored to the window, so it scales with
 ## the screen. To add a level, add one entry to LEVELS below. The picker shows
 ## the levels as a grid of cards (COLUMNS x ROWS per page); Prev/Next buttons
@@ -33,6 +33,7 @@ var _header: VBoxContainer
 var _main_panel: VBoxContainer
 var _levels_panel: VBoxContainer
 var _settings_panel: VBoxContainer
+var _settings_menu: SettingsMenu
 var _panels: Array[VBoxContainer] = []
 
 var _grid: GridContainer
@@ -150,13 +151,11 @@ func _build_levels_panel() -> void:
 
 
 func _build_settings_panel() -> void:
-	_settings_panel.add_child(_make_heading("Settings"))
-	var note := Label.new()
-	note.text = "Coming soon."
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	note.modulate = Color(1, 1, 1, 0.6)
-	_settings_panel.add_child(note)
-	_settings_panel.add_child(_make_button("Back", _show_panel.bind(_main_panel)))
+	# The settings screen itself lives in ui/settings_menu.gd (the pause menu
+	# uses the same one).
+	_settings_menu = SettingsMenu.new()
+	_settings_menu.back_pressed.connect(_show_panel.bind(_main_panel))
+	_settings_panel.add_child(_settings_menu)
 
 
 func _page_count() -> int:
@@ -278,8 +277,12 @@ func _make_button(text: String, on_pressed: Callable) -> Button:
 func _show_panel(panel: VBoxContainer) -> void:
 	for p in _panels:
 		p.visible = (p == panel)
-	_header.visible = (panel != _levels_panel)
-	_focus_first_button(panel)
+	# The big title only on the main buttons; the picker and settings need the room.
+	_header.visible = (panel == _main_panel)
+	if panel == _settings_panel:
+		_settings_menu.focus_first()
+	else:
+		_focus_first_button(panel)
 
 
 # Keyboard / gamepad: focus the first enabled button found in the panel.

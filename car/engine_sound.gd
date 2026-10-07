@@ -32,6 +32,9 @@ func _ready() -> void:
 	gen.buffer_length = 0.2 # room for a slow frame without crackling
 	stream = gen
 	volume_db = engine_volume_db
+	# Effects volume slider (Settings > Audio) controls the "SFX" bus.
+	if AudioServer.get_bus_index("SFX") != -1:
+		bus = "SFX"
 	play()
 	_playback = get_stream_playback() as AudioStreamGeneratorPlayback
 

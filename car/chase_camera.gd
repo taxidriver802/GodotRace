@@ -38,6 +38,17 @@ func _ready() -> void:
 	# own body or it would collide with it and pull the camera in.
 	arm.add_excluded_object(car.get_rid())
 	snap.call_deferred()
+	# Field of view follows the player's setting (Settings > Gameplay).
+	var settings := get_node_or_null("/root/GameSettings")
+	if settings != null:
+		_on_setting_changed("camera_fov", settings.get_value("camera_fov"))
+		settings.changed.connect(_on_setting_changed)
+
+
+func _on_setting_changed(key: String, value: Variant) -> void:
+	var camera := arm.get_node_or_null("Camera3D") as Camera3D
+	if key == "camera_fov" and camera != null:
+		camera.fov = value
 
 
 ## Jump straight behind the car with no smoothing (spawns, resets).

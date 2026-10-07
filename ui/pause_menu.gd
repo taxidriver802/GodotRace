@@ -15,6 +15,8 @@ var _resume_button: Button
 var _restart_button: Button
 var _counting := false
 var _results := false # true while the panel is the end-of-race screen
+var _menu_box: VBoxContainer
+var _settings_menu: SettingsMenu
 
 
 func _ready() -> void:
@@ -29,6 +31,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("ui_cancel") or not _in_level():
 		return
 	get_viewport().set_input_as_handled()
+	if _settings_menu.visible:
+		_close_settings() # Escape backs out of settings first
+		return
 	if _counting or _results:
 		return # no resuming from the results screen
 	if get_tree().paused:
@@ -39,6 +44,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func pause() -> void:
 	_results = false
+	_close_settings(false)
 	_title_label.text = "Paused"
 	_stats_label.hide()
 	_resume_button.show()
@@ -51,6 +57,7 @@ func pause() -> void:
 ## times, and without Resume. Called by the RaceManager when the race finishes.
 func show_results(total_time: float, lap_times: Array) -> void:
 	_results = true
+	_close_settings(false)
 	get_tree().paused = true
 	_title_label.text = "Race Complete"
 
@@ -160,6 +167,13 @@ func _build_ui() -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 14)
 	center.add_child(box)
+	_menu_box = box
+
+	# The same settings screen as the main menu, swapped in over the buttons.
+	_settings_menu = SettingsMenu.new()
+	_settings_menu.hide()
+	_settings_menu.back_pressed.connect(_close_settings)
+	center.add_child(_settings_menu)
 
 	_title_label = Label.new()
 	_title_label.text = "Paused"
@@ -182,6 +196,7 @@ func _build_ui() -> void:
 	box.add_child(_resume_button)
 	_restart_button = _make_button("Restart", _restart)
 	box.add_child(_restart_button)
+	box.add_child(_make_button("Settings", _open_settings))
 	box.add_child(_make_button("Main Menu", _to_main_menu))
 
 	_count_label = Label.new()
@@ -194,6 +209,22 @@ func _build_ui() -> void:
 	_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_count_label.hide()
 	add_child(_count_label)
+
+
+func _open_settings() -> void:
+	_menu_box.hide()
+	_settings_menu.show()
+	_settings_menu.focus_first()
+
+
+## Back from settings to the pause / results buttons.
+func _close_settings(refocus: bool = true) -> void:
+	if _settings_menu == null:
+		return
+	_settings_menu.hide()
+	_menu_box.show()
+	if refocus:
+		(_resume_button if _resume_button.visible else _restart_button).grab_focus()
 
 
 func _make_button(text: String, on_pressed: Callable) -> Button:
