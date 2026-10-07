@@ -13,6 +13,8 @@ const LEVELS := [
 	{"name": "Level 1", "path": "res://levels/level_1.tscn", "image": "res://images/level_1.png"},
 	{"name": "Level 2", "path": "res://levels/level_2.tscn", "image": "res://images/level_2.png"},
 	{"name": "Level 3", "path": "res://levels/level_3.tscn", "image": "res://images/level_3.png"},
+	{"name": "Level 4", "path": "res://levels/level_4.tscn", "image": "res://images/level_4.png"},
+	{"name": "Level 5", "path": "res://levels/level_5.tscn", "image": "res://images/level_5.png"},
 	{"name": "Demo Track", "path": "res://levels/track_demo.tscn", "image": "res://images/demo_track.png"},
 	{"name": "Car Test", "path": "res://levels/car_test.tscn", "image": "res://images/car_test.png"},
 ]
