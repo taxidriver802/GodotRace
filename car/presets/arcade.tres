@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CarTuning" format=3]
+
+[ext_resource type="Script" path="res://car/car_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+peak_torque = 480.0
+redline_rpm = 7500.0
+idle_rpm = 1000.0
+launch_rpm = 3500.0
+engine_braking = 110.0
+ratios = PackedFloat32Array(3.0, 2.25, 1.78, 1.47, 1.25)
+reverse_ratio = 3.2
+final_drive = 3.9
+shift_time = 0.2
+upshift_rpm_frac = 0.92
+downshift_rpm_frac = 0.45
+drag_coefficient = 1.5
+rolling_resistance = 1.0
+tire_friction = 1.6
+front_grip = 18.0
+rear_grip = 16.0
+handbrake_rear_grip = 0.2

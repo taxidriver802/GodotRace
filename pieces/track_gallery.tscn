@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="1_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_45_left.tscn" id="2_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_45_right.tscn" id="3_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_left.tscn" id="4_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_right.tscn" id="5_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_wide_left.tscn" id="6_p"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_wide_right.tscn" id="7_p"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[node name="TrackGallery" type="Node3D"]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, 0.6, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 600.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_main")
+
+[node name="Straight" parent="." instance=ExtResource("1_p")]
+position = Vector3(-420, 0, 40)
+
+[node name="Turn45Left" parent="." instance=ExtResource("2_p")]
+position = Vector3(-280, 0, 40)
+
+[node name="Turn45Right" parent="." instance=ExtResource("3_p")]
+position = Vector3(-140, 0, 40)
+
+[node name="Turn90Left" parent="." instance=ExtResource("4_p")]
+position = Vector3(0, 0, 40)
+
+[node name="Turn90Right" parent="." instance=ExtResource("5_p")]
+position = Vector3(140, 0, 40)
+
+[node name="Turn90WideLeft" parent="." instance=ExtResource("6_p")]
+position = Vector3(280, 0, 40)
+
+[node name="Turn90WideRight" parent="." instance=ExtResource("7_p")]
+position = Vector3(420, 0, 40)

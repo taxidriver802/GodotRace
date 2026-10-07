@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://w3p6bptrqwkt"]
+
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="1_base"]
+
+[node name="TrackTurn45Left" unique_id=1179164601 instance=ExtResource("1_base")]
+kind = 1
+turn_angle_degrees = 45.0
+radius = 40.0
+
+[node name="Exit" parent="." index="0"]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -11.715729, 0, -28.284271)

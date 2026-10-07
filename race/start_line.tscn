@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://race/checkpoint.tscn" id="1_base"]
+
+[node name="StartLine" instance=ExtResource("1_base")]
+kind = 1
+distance = 4.0

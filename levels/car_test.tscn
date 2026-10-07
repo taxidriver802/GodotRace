@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://do08vg56clqbe"]
+
+[ext_resource type="PackedScene" path="res://car/raycast_car.tscn" id="1_b80j7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(600, 1, 600)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.32, 0.34, 0.36, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_floor"]
+material = SubResource("Mat_floor")
+size = Vector3(600, 1, 600)
+
+[sub_resource type="StandardMaterial3D" id="Mat_marker_a"]
+albedo_color = Color(0.95, 0.75, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_marker_a"]
+material = SubResource("Mat_marker_a")
+size = Vector3(2, 4, 2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_marker_b"]
+albedo_color = Color(0.15, 0.55, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_marker_b"]
+material = SubResource("Mat_marker_b")
+size = Vector3(2, 4, 2)
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[node name="CarTest" type="Node3D" unique_id=656036386]
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=2039113841]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=2123219404]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=1362298433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01783657, 9.536743e-07, -0.011629581)
+mesh = SubResource("Mesh_floor")
+
+[node name="MarkerA1" type="MeshInstance3D" parent="." unique_id=2129413055]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -30)
+mesh = SubResource("Mesh_marker_a")
+
+[node name="MarkerB1" type="MeshInstance3D" parent="." unique_id=897374392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -30)
+mesh = SubResource("Mesh_marker_b")
+
+[node name="MarkerA2" type="MeshInstance3D" parent="." unique_id=1794897448]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -70)
+mesh = SubResource("Mesh_marker_a")
+
+[node name="MarkerB2" type="MeshInstance3D" parent="." unique_id=1013694978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -70)
+mesh = SubResource("Mesh_marker_b")
+
+[node name="MarkerA3" type="MeshInstance3D" parent="." unique_id=1585871203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -110)
+mesh = SubResource("Mesh_marker_a")
+
+[node name="MarkerB3" type="MeshInstance3D" parent="." unique_id=1861652238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -110)
+mesh = SubResource("Mesh_marker_b")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=454008491]
+transform = Transform3D(0.8253356, -0.44229966, 0.3509874, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=702813647]
+environment = SubResource("Env_main")
+
+[node name="Car" parent="." unique_id=1074854797 instance=ExtResource("1_b80j7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="1_base"]
+
+[node name="TrackTurn45Right" instance=ExtResource("1_base")]
+kind = 1
+turn_left = false
+turn_angle_degrees = 45.0
+radius = 40.0

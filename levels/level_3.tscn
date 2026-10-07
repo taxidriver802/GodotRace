@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://3picwqj4dvak"]
+
+[ext_resource type="PackedScene" path="res://car/raycast_car.tscn" id="1_8l0e1"]
+[ext_resource type="Script" uid="uid://xpsjmcf8m8bm" path="res://pieces/track_chain.gd" id="2_lfnxh"]
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="3_ofchu"]
+[ext_resource type="PackedScene" path="res://race/start_line.tscn" id="4_jq78i"]
+[ext_resource type="PackedScene" path="res://race/finish_line.tscn" id="5_lsnkt"]
+[ext_resource type="Script" uid="uid://c02y3l5wu17ec" path="res://race/race_manager.gd" id="6_wj73x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0unm6"]
+size = Vector3(600, 1, 600)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.24, 0.4, 0.22, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_q42ux"]
+material = SubResource("Mat_ground")
+size = Vector3(600, 1, 600)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5orea"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_5orea")
+
+[sub_resource type="Environment" id="Environment_wi0qq"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s3q8p"]
+
+[node name="Level3" type="Node3D" unique_id=256532861]
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=113675763]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.55, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=228320442]
+shape = SubResource("BoxShape3D_0unm6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=2039832409]
+mesh = SubResource("BoxMesh_q42ux")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1041105491]
+transform = Transform3D(0.8253356, -0.44229966, 0.35098737, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 200.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1886627132]
+environment = SubResource("Environment_wi0qq")
+
+[node name="Car" parent="." unique_id=1416973723 instance=ExtResource("1_8l0e1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05600977, 0.21088982, 0.31987262)
+
+[node name="Track" type="Node3D" parent="." unique_id=1466828276]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 250.70366, 18.50116, 271.66724)
+script = ExtResource("2_lfnxh")
+
+[node name="TrackPiece" parent="Track" unique_id=685044038 instance=ExtResource("3_ofchu")]
+
+[node name="StartLine" parent="Track/TrackPiece" unique_id=947796792 instance=ExtResource("4_jq78i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+distance = 8.0
+
+[node name="TrackPiece2" parent="Track" unique_id=1916025738 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -40)
+
+[node name="TrackPiece3" parent="Track" unique_id=1949679383 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -80)
+
+[node name="TrackPiece4" parent="Track" unique_id=671534693 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -120)
+
+[node name="TrackPiece5" parent="Track" unique_id=2131609944 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -160)
+
+[node name="TrackPiece6" parent="Track" unique_id=1403652415 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -200)
+
+[node name="TrackPiece7" parent="Track" unique_id=1850040041 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -240)
+
+[node name="TrackPiece8" parent="Track" unique_id=1010332615 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -280)
+
+[node name="TrackPiece9" parent="Track" unique_id=1450075929 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -320)
+
+[node name="TrackPiece10" parent="Track" unique_id=960018479 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -360)
+
+[node name="TrackPiece11" parent="Track" unique_id=230835885 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -400)
+rise = 4.0
+
+[node name="TrackPiece12" parent="Track" unique_id=804088603 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -440)
+kind = 3
+rise = -17.5
+
+[node name="TrackPiece13" parent="Track" unique_id=2052365956 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17.5, -480)
+
+[node name="TrackPiece20" parent="Track" unique_id=1287127067 instance=ExtResource("3_ofchu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17.5, -520)
+
+[node name="FinishLine" parent="Track/TrackPiece20" unique_id=1604236561 instance=ExtResource("5_lsnkt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -20)
+
+[node name="RaceManager" type="Node" parent="." unique_id=2060191279]
+script = ExtResource("6_wj73x")
+metadata/_custom_type_script = "uid://c02y3l5wu17ec"
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1238007633]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, -317, 0, -296)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=509540874]
+shape = SubResource("BoxShape3D_s3q8p")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Area3D" unique_id=1043065617]
+transform = Transform3D(5.884703, 0, 0, 0, 5.884703, 0, 0, 0, 5.884703, 2.8130493, -0.9852137, -0.042556763)
+size = Vector3(0.043945313, 0.66516113, 2.9786224)

@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://bpp3jsfv68yb4"]
+
+[ext_resource type="Script" uid="uid://xpsjmcf8m8bm" path="res://pieces/track_chain.gd" id="1_chain"]
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="2_straight"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_left.tscn" id="3_turn"]
+[ext_resource type="PackedScene" path="res://car/raycast_car.tscn" id="4_car"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(600, 1, 600)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.24, 0.4, 0.22, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_ground"]
+material = SubResource("Mat_ground")
+size = Vector3(600, 1, 600)
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[node name="TrackDemo" type="Node3D" unique_id=415501193]
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=1307980641]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.55, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=238958008]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1492738207]
+mesh = SubResource("Mesh_ground")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=821416329]
+transform = Transform3D(0.8253356, -0.44229966, 0.3509874, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 200.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1722801585]
+environment = SubResource("Env_main")
+
+[node name="Track" type="Node3D" parent="." unique_id=286084923]
+script = ExtResource("1_chain")
+
+[node name="Straight1" parent="Track" unique_id=1792946526 instance=ExtResource("2_straight")]
+
+[node name="Turn1" parent="Track" unique_id=693742027 instance=ExtResource("3_turn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -40)
+
+[node name="Straight2" parent="Track" unique_id=296302924 instance=ExtResource("2_straight")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -20, 0, -60)
+
+[node name="Turn2" parent="Track" unique_id=1870837162 instance=ExtResource("3_turn")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -60, 0, -60)
+
+[node name="Straight3" parent="Track" unique_id=72342041 instance=ExtResource("2_straight")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -80, 0, -40)
+
+[node name="Turn3" parent="Track" unique_id=339852600 instance=ExtResource("3_turn")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -80, 0, 0)
+
+[node name="Straight4" parent="Track" unique_id=1686887635 instance=ExtResource("2_straight")]
+transform = Transform3D(1.3113416e-07, 0, -1, 0, 1, 0, 1, 0, 1.3113416e-07, -60, 0, 19.999998)
+
+[node name="Turn4" parent="Track" unique_id=1065262016 instance=ExtResource("3_turn")]
+transform = Transform3D(1.3113416e-07, 0, -1, 0, 1, 0, 1, 0, 1.3113416e-07, -20, 0, 19.999992)
+
+[node name="Car" parent="." unique_id=1645484967 instance=ExtResource("4_car")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -8)
