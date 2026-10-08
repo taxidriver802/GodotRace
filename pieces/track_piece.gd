@@ -78,8 +78,18 @@ const BARRIER_RED := Color(0.82, 0.1, 0.1)
 const BARRIER_WHITE := Color(0.93, 0.93, 0.93)
 const LINE_HEIGHT := 0.03 # paint sits slightly above the asphalt (no z-fighting)
 const BARRIER_BASE := -0.2 # barriers reach a little below the road surface
+## Collision is separate from what you see:
+## - Road: solid slabs ROAD_THICKNESS deep under the asphalt (layer "road"), so
+##   a hard landing can't push the car through a paper-thin surface.
+## - Walls: invisible, WALL_HEIGHT tall, inner face only and no top (layer
+##   "wall", on the internal WallCollider body). The striped barrier you see
+##   stays barrier_height tall; the car just can't climb or ride on it, and
+##   wheels (which only see terrain + road) never stand on it.
+const ROAD_THICKNESS := 1.0
+const WALL_HEIGHT := 2.5
 
 static var _material: StandardMaterial3D
+static var _wall_material: PhysicsMaterial
 
 var _pts := PackedVector3Array()
 var _dirs := PackedVector3Array()
@@ -88,14 +98,19 @@ var _verts := PackedVector3Array()
 var _norms := PackedVector3Array()
 var _cols := PackedColorArray()
 var _idx := PackedInt32Array()
-var _col_faces := PackedVector3Array()
+var _road_slabs: Array[PackedVector3Array] = []
+var _wall_faces := PackedVector3Array()
 
 var _mesh_instance: MeshInstance3D
+var _wall_body: StaticBody3D
 var _shape_owner_id := -1
+var _wall_owner_id := -1
 var _rebuild_queued := false
 
 
 func _ready() -> void:
+	collision_layer = PhysicsLayers.ROAD
+	collision_mask = 0
 	_rebuild()
 
 
@@ -187,25 +202,30 @@ func _rebuild() -> void:
 	_norms.clear()
 	_cols.clear()
 	_idx.clear()
-	_col_faces.clear()
+	_road_slabs.clear()
+	_wall_faces.clear()
 
 	var half := road_width * 0.5
 	for i in range(_pts.size() - 1):
-		# Asphalt.
-		_strip(i, -half, half, 0.0, ASPHALT, true)
+		# Asphalt (visual) and the solid slab under it (collision). The slab
+		# also runs under the barriers so the body never catches its edge.
+		_strip(i, -half, half, 0.0, ASPHALT)
+		_road_slab(i, half + barrier_thickness)
 		# Painted edge lines and a dashed center line (4 m dash, 4 m gap).
 		for s: float in [-1.0, 1.0]:
-			_strip(i, s * (half - 0.9), s * (half - 0.5), LINE_HEIGHT, EDGE_LINE, false)
+			_strip(i, s * (half - 0.9), s * (half - 0.5), LINE_HEIGHT, EDGE_LINE)
 		if (i % 4) < 2:
-			_strip(i, -0.15, 0.15, LINE_HEIGHT, CENTER_LINE, false)
-		# Striped barriers on both sides (color flips every 4 m).
+			_strip(i, -0.15, 0.15, LINE_HEIGHT, CENTER_LINE)
+		# Striped barriers on both sides (color flips every 4 m): visual only.
 		var barrier_color := BARRIER_RED if ((i >> 1) & 1) == 0 else BARRIER_WHITE
 		for s: float in [-1.0, 1.0]:
 			var inner := s * half
 			var outer := s * (half + barrier_thickness)
-			_strip(i, inner, outer, barrier_height, barrier_color, true)
+			_strip(i, inner, outer, barrier_height, barrier_color)
 			_wall(i, inner, BARRIER_BASE, barrier_height, -s, barrier_color) # faces the road
 			_wall(i, outer, BARRIER_BASE, barrier_height, s, barrier_color) # faces outward
+			# The wall the car actually hits: the inner face, taller, no top.
+			_wall_face(i, inner, BARRIER_BASE, WALL_HEIGHT)
 
 	_apply_mesh()
 	_apply_collision()
@@ -218,6 +238,8 @@ func _clear_geometry() -> void:
 		_mesh_instance.mesh = null
 	if _shape_owner_id != -1:
 		shape_owner_clear_shapes(_shape_owner_id)
+	if _wall_body != null and is_instance_valid(_wall_body) and _wall_owner_id != -1:
+		_wall_body.shape_owner_clear_shapes(_wall_owner_id)
 
 
 func _update_exit_marker() -> void:
@@ -261,21 +283,42 @@ func _pt(i: int, offset: float, y: float) -> Vector3:
 	return _pts[i] + _right(i) * offset + Vector3(0.0, y, 0.0)
 
 
-# Flat strip between two sideways offsets, from sample i to i + 1.
-func _strip(i: int, o0: float, o1: float, y: float, color: Color, collide: bool) -> void:
+# Flat strip between two sideways offsets, from sample i to i + 1 (visual).
+func _strip(i: int, o0: float, o1: float, y: float, color: Color) -> void:
 	_add_quad(_pt(i, o0, y), _pt(i + 1, o0, y), _pt(i + 1, o1, y), _pt(i, o1, y),
-			Vector3.UP, color, collide)
+			Vector3.UP, color)
 
 
 # Vertical face at a sideways offset. side = which way the face looks (+1 = right).
 func _wall(i: int, offset: float, y0: float, y1: float, side: float, color: Color) -> void:
 	_add_quad(_pt(i, offset, y0), _pt(i + 1, offset, y0), _pt(i + 1, offset, y1), _pt(i, offset, y1),
-			_right(i) * side, color, true)
+			_right(i) * side, color)
+
+
+# Collision: a solid box-like slab under the road from sample i to i + 1,
+# `half_width` each side of the center line, ROAD_THICKNESS deep.
+func _road_slab(i: int, half_width: float) -> void:
+	var pts := PackedVector3Array()
+	for k in [i, i + 1]:
+		for o: float in [-half_width, half_width]:
+			var top := _pt(k, o, 0.0)
+			pts.append(top)
+			pts.append(top - Vector3.UP * ROAD_THICKNESS)
+	_road_slabs.append(pts)
+
+
+# Collision: one invisible wall face from sample i to i + 1.
+func _wall_face(i: int, offset: float, y0: float, y1: float) -> void:
+	var a := _pt(i, offset, y0)
+	var b := _pt(i + 1, offset, y0)
+	var c := _pt(i + 1, offset, y1)
+	var d := _pt(i, offset, y1)
+	_wall_faces.append_array([a, b, c, a, c, d])
 
 
 # Adds a quad whose front side faces `normal`. Winding is fixed automatically
 # (Godot treats clockwise triangles as front faces).
-func _add_quad(a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, color: Color, collide: bool) -> void:
+func _add_quad(a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, color: Color) -> void:
 	if (b - a).cross(c - a).dot(normal) > 0.0:
 		var tmp := b
 		b = d
@@ -286,8 +329,6 @@ func _add_quad(a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, 
 		_norms.append(normal)
 		_cols.append(color)
 	_idx.append_array([base, base + 1, base + 2, base, base + 2, base + 3])
-	if collide:
-		_col_faces.append_array([a, b, c, a, c, d])
 
 
 func _apply_mesh() -> void:
@@ -309,14 +350,41 @@ func _apply_mesh() -> void:
 
 
 func _apply_collision() -> void:
-	var shape := ConcavePolygonShape3D.new()
-	shape.set_faces(_col_faces)
-	shape.backface_collision = true
+	# Road: one convex slab per segment, all on this body (layer "road").
 	if _shape_owner_id == -1:
 		_shape_owner_id = create_shape_owner(self)
 	else:
 		shape_owner_clear_shapes(_shape_owner_id)
-	shape_owner_add_shape(_shape_owner_id, shape)
+	for pts in _road_slabs:
+		var slab := ConvexPolygonShape3D.new()
+		slab.points = pts
+		shape_owner_add_shape(_shape_owner_id, slab)
+
+	# Walls: a separate internal body so they can sit on their own layer.
+	if _wall_body == null or not is_instance_valid(_wall_body):
+		_wall_body = StaticBody3D.new()
+		_wall_body.name = "WallCollider"
+		_wall_body.collision_layer = PhysicsLayers.WALL
+		_wall_body.collision_mask = 0
+		_wall_body.physics_material_override = _get_wall_material()
+		# Internal child: hidden from the scene dock and never saved.
+		add_child(_wall_body, false, Node.INTERNAL_MODE_BACK)
+		_wall_owner_id = _wall_body.create_shape_owner(_wall_body)
+	else:
+		_wall_body.shape_owner_clear_shapes(_wall_owner_id)
+	var walls := ConcavePolygonShape3D.new()
+	walls.set_faces(_wall_faces)
+	walls.backface_collision = true
+	_wall_body.shape_owner_add_shape(_wall_owner_id, walls)
+
+
+# Slippery, dead walls: the car slides along instead of bouncing or gripping.
+static func _get_wall_material() -> PhysicsMaterial:
+	if _wall_material == null:
+		_wall_material = PhysicsMaterial.new()
+		_wall_material.friction = 0.0
+		_wall_material.bounce = 0.0
+	return _wall_material
 
 
 static func _get_material() -> StandardMaterial3D:

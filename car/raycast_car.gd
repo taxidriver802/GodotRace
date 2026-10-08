@@ -108,6 +108,15 @@ enum Drive { RWD, FWD, AWD }
 @export var spring_stiffness := 40000.0
 ## Damper, N per m/s. Higher = settles faster, less bounce; too high = harsh.
 @export var spring_damping := 3500.0
+## Bump stop: the last bit of travel (meters of compression before the spring
+## is fully squeezed) where a stiff rubber stop takes over. Hard landings are
+## caught here instead of the body hitting the road.
+@export var bump_zone := 0.12
+## Bump stop spring, N/m. It grows with depth², so it's soft at first contact.
+@export var bump_stiffness := 300000.0
+## Share of a wheel's closing speed the bump stop soaks up each tick at full
+## depth (0..1). Higher = deader landings, less bounce back.
+@export_range(0.0, 1.0, 0.05) var bump_absorb := 0.35
 
 @export_group("Air")
 ## Pitch control in the air (W/S). 0 = none. Keep it low for now.
@@ -185,9 +194,14 @@ func _ready() -> void:
 	# resistance are the only things slowing the car (see the Aero group).
 	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	linear_damp = 0.0
+	# Body: on terrain (so gates still see it) + car; hits ground, road, walls.
+	collision_layer = PhysicsLayers.TERRAIN | PhysicsLayers.CAR
+	collision_mask = PhysicsLayers.CAR_BODY_MASK
 	for child in get_children():
 		if child is CarWheel:
 			wheels.append(child)
+			# Wheels only stand on ground and road, never on walls/barriers.
+			child.collision_mask = PhysicsLayers.WHEEL_MASK
 	if wheels.size() != 4:
 		push_warning("Car: expected 4 CarWheel children, found %d." % wheels.size())
 	_camera = get_node_or_null("ChaseCamera")
@@ -319,6 +333,13 @@ func _physics_process(delta: float) -> void:
 		if w.compression > 0.0:
 			var squeeze_speed := -point_vel.dot(up)
 			var f := spring_stiffness * w.compression + spring_damping * squeeze_speed
+			# Bump stop: how deep into the last `bump_zone` of travel (can pass
+			# 1 when the tire is pushed past full travel).
+			var depth := (w.compression - (rest_length - bump_zone)) / bump_zone
+			if depth > 0.0:
+				f += bump_stiffness * bump_zone * depth * depth
+				if squeeze_speed > 0.0:
+					f += wheel_mass * squeeze_speed * minf(depth, 1.0) * bump_absorb / delta
 			w.suspension_force = up * maxf(f, 0.0) # a spring never pulls the car down
 
 		# 2. Grip: remove part of the sideways sliding at this wheel each tick.

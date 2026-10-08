@@ -11,6 +11,7 @@ var _panel: Control
 var _count_label: Label
 var _title_label: Label
 var _stats_label: Label
+var _records_label: Label
 var _resume_button: Button
 var _restart_button: Button
 var _counting := false
@@ -47,6 +48,7 @@ func pause() -> void:
 	_close_settings(false)
 	_title_label.text = "Paused"
 	_stats_label.hide()
+	_records_label.hide()
 	_resume_button.show()
 	get_tree().paused = true
 	_panel.show()
@@ -55,15 +57,25 @@ func pause() -> void:
 
 ## End-of-race screen: the same panel as pause, titled "Race Complete" with the
 ## times, and without Resume. Called by the RaceManager when the race finishes.
-func show_results(total_time: float, lap_times: Array) -> void:
+## `info` is the RaceManager's saved-records report (see race/records.gd):
+## new_best, previous, rank, new_best_lap, stats, level. Empty = no records.
+func show_results(total_time: float, lap_times: Array, info: Dictionary = {}) -> void:
 	_results = true
 	_close_settings(false)
 	get_tree().paused = true
 	_title_label.text = "Race Complete"
 
-	var lines: PackedStringArray = [
-		"Total time   %s" % RaceManager.format_time(total_time)
-	]	
+	var total_line := "Total time   %s" % RaceManager.format_time(total_time)
+	if info.get("new_best", false):
+		total_line += "   NEW RECORD!"
+	var lines: PackedStringArray = [total_line]
+	var previous: float = info.get("previous", 0.0)
+	if previous > 0.0:
+		var diff := total_time - previous
+		if diff < 0.0:
+			lines.append("%.2fs faster than your best" % -diff)
+		else:
+			lines.append("Best %s  (+%.2fs)" % [RaceManager.format_time(previous), diff])
 
 	if lap_times.size() > 1:
 		var best_lap: float = lap_times.min()
@@ -80,9 +92,42 @@ func show_results(total_time: float, lap_times: Array) -> void:
 
 	_stats_label.text = "\n".join(lines)
 	_stats_label.show()
+	_records_label.text = _records_text(info)
+	_records_label.visible = _records_label.text != ""
 	_resume_button.hide()
 	_panel.show()
 	_restart_button.grab_focus()
+## The saved-records block under the times: best lap, top times, totals.
+func _records_text(info: Dictionary) -> String:
+	if not info.has("stats"):
+		return ""
+	var s: Dictionary = info.stats
+	var lines: PackedStringArray = []
+	var lap_line := "%s  |  Best lap  %s" % [_level_title(info), RaceManager.format_time(s.best_lap)]
+	if info.get("new_best_lap", false):
+		lap_line += "   NEW BEST LAP!"
+	lines.append(lap_line)
+	var tops: Array = s.top_times
+	if tops.size() > 1:
+		var parts: PackedStringArray = []
+		for i in tops.size():
+			var t := RaceManager.format_time(tops[i])
+			parts.append("[%s]" % t if i + 1 == info.get("rank", 0) else t)
+		lines.append("Top times  " + "   ".join(parts))
+	var settings := get_node_or_null("/root/GameSettings")
+	var mph: bool = settings != null and settings.get_value("speed_mph")
+	var speed: float = s.top_speed_kmh * (0.621371 if mph else 1.0)
+	lines.append("Races %d  |  Laps %d  |  Driven %s  |  Top speed %d %s" % [
+			s.races_finished, s.laps_completed, RaceManager.format_time(s.total_time),
+			roundi(speed), "mph" if mph else "km/h"])
+	return "\n".join(lines)
+
+
+func _level_title(info: Dictionary) -> String:
+	var id: String = info.get("level", "")
+	return id.get_file().get_basename().replace("_", " ").capitalize()
+
+
 ## Hides the menu, counts down, then un-pauses.
 func resume() -> void:
 	_countdown()
@@ -165,7 +210,7 @@ func _build_ui() -> void:
 	_panel.add_child(center)
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
+	box.add_theme_constant_override("separation", 8)
 	center.add_child(box)
 	_menu_box = box
 
@@ -178,18 +223,26 @@ func _build_ui() -> void:
 	_title_label = Label.new()
 	_title_label.text = "Paused"
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_label.add_theme_font_size_override("font_size", 64)
+	_title_label.add_theme_font_size_override("font_size", 56)
 	box.add_child(_title_label)
 
 	# Only shown on the end-of-race screen.
 	_stats_label = Label.new()
 	_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_stats_label.add_theme_font_size_override("font_size", 28)
+	_stats_label.add_theme_font_size_override("font_size", 24)
 	_stats_label.hide()
 	box.add_child(_stats_label)
 
+	# Saved records (best lap, top times, totals): end-of-race screen only.
+	_records_label = Label.new()
+	_records_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_records_label.add_theme_font_size_override("font_size", 16)
+	_records_label.modulate = Color(1, 1, 1, 0.75)
+	_records_label.hide()
+	box.add_child(_records_label)
+
 	var gap := Control.new()
-	gap.custom_minimum_size = Vector2(0, 16)
+	gap.custom_minimum_size = Vector2(0, 4)
 	box.add_child(gap)
 
 	_resume_button = _make_button("Resume", resume)

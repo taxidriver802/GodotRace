@@ -1,0 +1,110 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://car/raycast_car.tscn" id="1_car"]
+[ext_resource type="Script" path="res://pieces/track_chain.gd" id="2_chain"]
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="3_piece"]
+
+[sub_resource type="BoxShape3D" id="Shape_floor"]
+size = Vector3(700, 1, 700)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.24, 0.4, 0.22, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_floor"]
+material = SubResource("Mat_floor")
+size = Vector3(700, 1, 700)
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[node name="StressTrack" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, -0.55, -150)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("Shape_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("Mesh_floor")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8253356, -0.44229966, 0.35098737, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_main")
+
+[node name="Car" parent="." instance=ExtResource("1_car")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -6)
+
+[node name="Track" type="Node3D" parent="."]
+script = ExtResource("2_chain")
+
+[node name="P01_Straight80" parent="Track" instance=ExtResource("3_piece")]
+length = 80.0
+
+[node name="P02_Right90_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+
+[node name="P03_Straight40" parent="Track" instance=ExtResource("3_piece")]
+
+[node name="P04_Left90_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+
+[node name="P05_Right45_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+turn_angle_degrees = 45.0
+
+[node name="P06_Straight60" parent="Track" instance=ExtResource("3_piece")]
+length = 60.0
+
+[node name="P07_Left90_r60" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+radius = 60.0
+
+[node name="P08_RampUp8" parent="Track" instance=ExtResource("3_piece")]
+kind = 2
+length = 50.0
+rise = 8.0
+
+[node name="P09_Straight30" parent="Track" instance=ExtResource("3_piece")]
+length = 30.0
+
+[node name="P10_Gap16" parent="Track" instance=ExtResource("3_piece")]
+kind = 3
+length = 16.0
+rise = 0.0
+
+[node name="P11_Straight40" parent="Track" instance=ExtResource("3_piece")]
+
+[node name="P12_Hairpin180_r24" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+turn_angle_degrees = 180.0
+radius = 24.0
+
+[node name="P13_Straight40" parent="Track" instance=ExtResource("3_piece")]
+
+[node name="P14_GapDrop8" parent="Track" instance=ExtResource("3_piece")]
+kind = 3
+length = 20.0
+rise = -8.0
+
+[node name="P15_Straight100" parent="Track" instance=ExtResource("3_piece")]
+length = 100.0
+
+[node name="P16_Left90_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+
+[node name="P17_Straight60" parent="Track" instance=ExtResource("3_piece")]
+length = 60.0

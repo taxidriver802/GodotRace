@@ -1,0 +1,94 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://car/raycast_car.tscn" id="1_car"]
+[ext_resource type="Script" path="res://pieces/track_chain.gd" id="2_chain"]
+[ext_resource type="PackedScene" path="res://pieces/track_piece.tscn" id="3_piece"]
+
+[sub_resource type="BoxShape3D" id="Shape_floor"]
+size = Vector3(1200, 1, 1200)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.24, 0.4, 0.22, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_floor"]
+material = SubResource("Mat_floor")
+size = Vector3(1200, 1, 1200)
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+
+[node name="TurnTest" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, -0.55, -300)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("Shape_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("Mesh_floor")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8253356, -0.44229966, 0.35098737, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_main")
+
+[node name="Car" parent="." instance=ExtResource("1_car")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -6)
+
+[node name="Track" type="Node3D" parent="."]
+script = ExtResource("2_chain")
+
+[node name="T01_Straight250" parent="Track" instance=ExtResource("3_piece")]
+length = 250.0
+
+[node name="T02_Right90_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+
+[node name="T03_Straight150" parent="Track" instance=ExtResource("3_piece")]
+length = 150.0
+
+[node name="T04_Left90_r30" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+radius = 30.0
+
+[node name="T05_Straight150" parent="Track" instance=ExtResource("3_piece")]
+length = 150.0
+
+[node name="T06_Right45_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+turn_angle_degrees = 45.0
+
+[node name="T07_Left45_r20" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_angle_degrees = 45.0
+
+[node name="T08_Straight150" parent="Track" instance=ExtResource("3_piece")]
+length = 150.0
+
+[node name="T09_Hairpin180_r24" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+turn_left = false
+turn_angle_degrees = 180.0
+radius = 24.0
+
+[node name="T10_Straight120" parent="Track" instance=ExtResource("3_piece")]
+length = 120.0
+
+[node name="T11_Left90_r60" parent="Track" instance=ExtResource("3_piece")]
+kind = 1
+radius = 60.0
+
+[node name="T12_Straight80" parent="Track" instance=ExtResource("3_piece")]
+length = 80.0

@@ -51,9 +51,15 @@ var lap_times: Array[float] = []
 var running := false
 var finished := false
 
+## Fastest speed on the current lap, km/h (reset each lap).
+var top_speed_kmh := 0.0
+
 var _collected := {}
 var _armed := false
 var _label: Label
+var _level_id := ""
+var _records: Node # the Records autoload (race/records.gd)
+var _new_best_lap := false # a lap this race beat the saved best lap
 
 
 func _ready() -> void:
@@ -85,6 +91,8 @@ func _setup() -> void:
 		push_warning("RaceManager: add a START gate (or a FINISH gate) so the race can end.")
 	if show_hud:
 		_build_hud()
+	_records = get_node_or_null("/root/Records")
+	_level_id = get_tree().current_scene.scene_file_path
 	running = true
 	race_started.emit()
 
@@ -94,6 +102,8 @@ func _physics_process(delta: float) -> void:
 		return
 	race_time += delta
 	lap_time += delta
+	if car != null and "speed" in car:
+		top_speed_kmh = maxf(top_speed_kmh, absf(car.speed) * 3.6)
 	var gate := _lap_gate()
 	if not _armed and car != null and gate != null:
 		_armed = car.global_position.distance_to(gate.global_position) > arm_distance
@@ -127,6 +137,8 @@ func restart() -> void:
 	lap_time = 0.0
 	race_time = 0.0
 	lap_times.clear()
+	top_speed_kmh = 0.0
+	_new_best_lap = false
 	finished = false
 	running = true
 	_armed = false
@@ -158,17 +170,27 @@ func _on_gate_passed(gate: Checkpoint, body: Car) -> void:
 		return
 	lap_times.append(lap_time)
 	lap_completed.emit(lap, lap_time)
+	# Saved records (best lap, totals). Done before the race result below.
+	if _records != null and _records.submit_lap(_level_id, lap_time, top_speed_kmh):
+		_new_best_lap = true
 	if lap >= laps_in_race():
 		finished = true
 		running = false
+		var result := {}
+		if _records != null:
+			result = _records.submit_race(_level_id, race_time)
+			result["new_best_lap"] = _new_best_lap
+			result["stats"] = _records.get_stats(_level_id)
+			result["level"] = _level_id
 		race_finished.emit(race_time)
 		_update_hud()
 		if show_results_screen:
 			# Deferred: we're inside a physics callback.
-			get_node("/root/PauseMenu").call_deferred("show_results", race_time, lap_times.duplicate())
+			get_node("/root/PauseMenu").call_deferred("show_results", race_time, lap_times.duplicate(), result)
 		return
 	lap += 1
 	lap_time = 0.0
+	top_speed_kmh = 0.0
 	_armed = false
 	_reset_checkpoints()
 
@@ -199,6 +221,12 @@ func _update_hud() -> void:
 		lines.append("Time %s" % format_time(race_time))
 	if not lap_times.is_empty():
 		lines.append("Last lap %s" % format_time(lap_times[-1]))
+	if _records != null:
+		var saved: Dictionary = _records.get_stats(_level_id)
+		if saved.best_race > 0.0:
+			lines.append("Best %s" % format_time(saved.best_race))
+		if finish_gate == null and saved.best_lap > 0.0:
+			lines.append("Best lap %s" % format_time(saved.best_lap))
 	_label.text = "\n".join(lines)
 
 

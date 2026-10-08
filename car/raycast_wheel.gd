@@ -51,15 +51,20 @@ func sense(rest_length: float, travel: float, radius: float) -> void:
 	target_position = Vector3(0.0, -(max_spring + radius), 0.0)
 	force_raycast_update()
 	grounded = is_colliding()
+	var raw_length := max_spring
 	if grounded:
 		contact_point = get_collision_point()
 		contact_normal = get_collision_normal()
-		spring_length = clampf(global_position.distance_to(contact_point) - radius, 0.0, max_spring)
+		raw_length = global_position.distance_to(contact_point) - radius
+		spring_length = clampf(raw_length, 0.0, max_spring)
 	else:
 		spring_length = max_spring
 		contact_normal = global_basis.y
 		contact_point = global_position - global_basis.y * (max_spring + radius)
-	compression = maxf(0.0, rest_length - spring_length)
+	# Not clamped at rest_length: past full travel (tire pushed up into the
+	# body on a hard landing) compression keeps growing, so the bump stop can
+	# push back instead of the body slamming the road.
+	compression = maxf(0.0, rest_length - raw_length)
 	suspension_force = Vector3.ZERO
 	grip_force = Vector3.ZERO
 	drive_force = Vector3.ZERO

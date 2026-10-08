@@ -8,8 +8,10 @@
 [ext_resource type="PackedScene" path="res://pieces/track_turn_45_right.tscn" id="6_betor"]
 [ext_resource type="PackedScene" path="res://pieces/track_turn_90_wide_left.tscn" id="7_vjtdm"]
 [ext_resource type="PackedScene" path="res://race/checkpoint.tscn" id="8_bgw3c"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_left.tscn" id="9_aerfg"]
 [ext_resource type="Script" uid="uid://c02y3l5wu17ec" path="res://race/race_manager.gd" id="9_lrvbd"]
 [ext_resource type="PackedScene" path="res://pieces/decor/tree.tscn" id="10_08mmt"]
+[ext_resource type="PackedScene" path="res://pieces/track_turn_90_right.tscn" id="10_nmsli"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_feb5d"]
 size = Vector3(600, 1, 600)
@@ -57,6 +59,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05600977, 0.21088982, 0.31
 script = ExtResource("2_08mmt")
 
 [node name="TrackPiece" parent="Track" unique_id=1968558380 instance=ExtResource("3_5ot28")]
+collision_layer = 2
+collision_mask = 0
 
 [node name="StartLine" parent="Track/TrackPiece" unique_id=393955625 instance=ExtResource("4_aerfg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
@@ -64,48 +68,136 @@ show_in_game = false
 
 [node name="TrackTurn45Left" parent="Track" unique_id=721643241 instance=ExtResource("5_nmsli")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -40)
+collision_layer = 2
+collision_mask = 0
 
 [node name="TrackTurn45Right" parent="Track" unique_id=263395126 instance=ExtResource("6_betor")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -11.715729, 0, -68.28427)
+collision_layer = 2
+collision_mask = 0
 
 [node name="TrackPiece2" parent="Track" unique_id=1800899151 instance=ExtResource("3_5ot28")]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, -23.431458, 0, -96.56854)
+collision_layer = 2
+collision_mask = 0
 
 [node name="TrackTurn90WideLeft" parent="Track" unique_id=2031580511 instance=ExtResource("7_vjtdm")]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, -23.431458, 0, -136.56854)
+collision_layer = 2
+collision_mask = 0
 
 [node name="Checkpoint" parent="Track/TrackTurn90WideLeft" unique_id=874599913 instance=ExtResource("8_bgw3c")]
 transform = Transform3D(0.9977786, 0, 0.066617295, 0, 1, 0, -0.066617295, 0, 0.9977786, -0.13328552, 0, -3.9970376)
 
 [node name="TrackTurn90WideLeft2" parent="Track" unique_id=2111845479 instance=ExtResource("7_vjtdm")]
 transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, -83.43146, 0, -196.56854)
+collision_layer = 2
+collision_mask = 0
 
 [node name="TrackPiece3" parent="Track" unique_id=80804886 instance=ExtResource("3_5ot28")]
 transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, -143.43146, 0, -136.56854)
+collision_layer = 2
+collision_mask = 0
 kind = 2
+rise = 8.0
 
-[node name="TrackTurn45Left2" parent="Track" unique_id=1488996760 instance=ExtResource("5_nmsli")]
-transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, -143.43146, 6, -96.56854)
+[node name="TrackTurn90Left" parent="Track" unique_id=1688240257 instance=ExtResource("9_aerfg")]
+transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, -143.43146, 8, -96.56854)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackTurn90Left2" parent="Track" unique_id=1742574053 instance=ExtResource("9_aerfg")]
+transform = Transform3D(1.3113416e-07, 0, -0.99999994, 0, 1, 0, 0.99999994, 0, 1.3113416e-07, -123.43146, 8, -76.56854)
+collision_layer = 2
+collision_mask = 0
+turn_left = false
+
+[node name="TrackTurn90Left3" parent="Track" unique_id=1435763584 instance=ExtResource("9_aerfg")]
+transform = Transform3D(-0.99999994, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -0.99999994, -103.43146, 8, -56.568546)
+collision_layer = 2
+collision_mask = 0
+turn_left = false
+
+[node name="TrackTurn90Left4" parent="Track" unique_id=861722775 instance=ExtResource("9_aerfg")]
+transform = Transform3D(-4.3711392e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711392e-08, -123.43146, 8, -36.568546)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackPiece5" parent="Track" unique_id=27523160 instance=ExtResource("3_5ot28")]
+transform = Transform3D(-0.99999994, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -0.99999994, -143.43146, 8, -16.568548)
+collision_layer = 2
+collision_mask = 0
+kind = 2
+rise = 0.0
 
 [node name="TrackTurn45Right2" parent="Track" unique_id=1949906528 instance=ExtResource("6_betor")]
-transform = Transform3D(-0.70710665, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710665, -131.71573, 6, -68.28427)
+transform = Transform3D(-0.99999994, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -0.99999994, -143.43146, 8, 23.431448)
+collision_layer = 2
+collision_mask = 0
 
 [node name="Checkpoint" parent="Track/TrackTurn45Right2" unique_id=1184076756 instance=ExtResource("8_bgw3c")]
 transform = Transform3D(0.9950042, 0, -0.09983342, 0, 1, 0, 0.09983342, 0, 0.9950042, 0.19983292, 0, -3.993337)
 
+[node name="TrackTurn45Left2" parent="Track" unique_id=1179164601 instance=ExtResource("5_nmsli")]
+transform = Transform3D(-0.70710677, 0, 0.70710665, 0, 1, 0, -0.70710665, 0, -0.70710677, -155.14719, 8, 51.71572)
+collision_layer = 2
+collision_mask = 0
+
 [node name="TrackPiece4" parent="Track" unique_id=101213176 instance=ExtResource("3_5ot28")]
-transform = Transform3D(-0.9999999, 0, -5.9604645e-08, 0, 1, 0, 5.9604645e-08, 0, -0.9999999, -120, 6, -40.000004)
+transform = Transform3D(-0.9999999, 0, -5.9604645e-08, 0, 1, 0, 5.9604645e-08, 0, -0.9999999, -166.86292, 8, 79.99999)
+collision_layer = 2
+collision_mask = 0
 kind = 2
 rise = -6.0
 
 [node name="TrackTurn90WideLeft3" parent="Track" unique_id=78031904 instance=ExtResource("7_vjtdm")]
-transform = Transform3D(-0.9999999, 0, -5.9604645e-08, 0, 1, 0, 5.9604645e-08, 0, -0.9999999, -120, 0, -7.6293945e-06)
+transform = Transform3D(-0.9999999, 0, -5.9604645e-08, 0, 1, 0, 5.9604645e-08, 0, -0.9999999, -166.86292, 2, 119.999985)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackPiece6" parent="Track" unique_id=1353050550 instance=ExtResource("3_5ot28")]
+transform = Transform3D(1.03316026e-07, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 1.03316026e-07, -106.862915, 2, 179.99997)
+collision_layer = 2
+collision_mask = 0
+length = 47.0
 
 [node name="TrackTurn90WideLeft4" parent="Track" unique_id=629265899 instance=ExtResource("7_vjtdm")]
-transform = Transform3D(1.03316026e-07, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 1.03316026e-07, -60, 0, 59.99998)
+transform = Transform3D(1.03316026e-07, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 1.03316026e-07, -59.86292, 2, 179.99997)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackTurn90Right" parent="Track" unique_id=1142487027 instance=ExtResource("10_nmsli")]
+transform = Transform3D(0.9999999, 0, 1.4702741e-07, 0, 1, 0, -1.4702741e-07, 0, 0.9999999, 0.13706589, 2, 119.99997)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackTurn90Right2" parent="Track" unique_id=1556746706 instance=ExtResource("10_nmsli")]
+transform = Transform3D(1.03316026e-07, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 1.03316026e-07, 20.13706, 2, 99.99997)
+collision_layer = 2
+collision_mask = 0
+turn_left = true
+
+[node name="TrackTurn90Right3" parent="Track" unique_id=1990475571 instance=ExtResource("10_nmsli")]
+transform = Transform3D(0.9999999, 0, 1.4702741e-07, 0, 1, 0, -1.4702741e-07, 0, 0.9999999, 40.137054, 2, 79.99997)
+collision_layer = 2
+collision_mask = 0
+turn_left = true
+
+[node name="TrackTurn90Right4" parent="Track" unique_id=1702859072 instance=ExtResource("10_nmsli")]
+transform = Transform3D(-1.9073879e-07, 0, 0.9999999, 0, 1, 0, -0.9999999, 0, -1.9073879e-07, 20.137053, 2, 59.999977)
+collision_layer = 2
+collision_mask = 0
+
+[node name="TrackPiece7" parent="Track" unique_id=72173094 instance=ExtResource("3_5ot28")]
+transform = Transform3D(0.9999999, 0, 1.4702741e-07, 0, 1, 0, -1.4702741e-07, 0, 0.9999999, 0.13705063, 2, 39.999985)
+collision_layer = 2
+collision_mask = 0
+kind = 2
+rise = -2.0
 
 [node name="RaceManager" type="Node" parent="." unique_id=1999101215]
 script = ExtResource("9_lrvbd")
+total_laps = 1
 metadata/_custom_type_script = "uid://c02y3l5wu17ec"
 
 [node name="Decor" type="Node3D" parent="." unique_id=1848897245]

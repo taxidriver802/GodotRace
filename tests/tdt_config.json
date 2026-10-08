@@ -1,0 +1,8 @@
+{
+  "level": "res://levels/level_5.tscn",
+  "speed_mode": "limit",
+  "corner_g": 1.4,
+  "line": "center",
+  "max_time": 120.0,
+  "label": "M1 level_5 1.4g 3-laps"
+}

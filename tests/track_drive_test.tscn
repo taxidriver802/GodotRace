@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bhaxlli1evlgt"]
+
+[ext_resource type="Script" uid="uid://dr17lexvvxxqe" path="res://tests/track_drive_test.gd" id="1_tdt"]
+
+[node name="TrackDriveTest" type="Node" unique_id=237260781]
+script = ExtResource("1_tdt")
